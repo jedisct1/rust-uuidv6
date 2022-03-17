@@ -99,6 +99,7 @@ impl UUIDv6 {
     }
 }
 
+#[derive(Default, Debug, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct UUIDv6Iterator {
     uuid: UUIDv6,
 }
