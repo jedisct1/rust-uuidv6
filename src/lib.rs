@@ -110,8 +110,8 @@ impl Iterator for UUIDv6Iterator {
 }
 
 impl IntoIterator for UUIDv6 {
-    type Item = String;
     type IntoIter = UUIDv6Iterator;
+    type Item = String;
 
     fn into_iter(self) -> Self::IntoIter {
         UUIDv6Iterator { uuid: self }
