@@ -29,23 +29,35 @@ impl Node {
         Node { node_id: *bytes }
     }
 
-    /// Create a UUIDv6 base object
+    /// Create a standard UUIDv6 base object
     pub fn uuidv6(&self) -> UUIDv6 {
         UUIDv6::new(self)
     }
+
+    /// Create a raw UUIDv6 base object - Raw UUIDv6 is a 16 byte binary array, not a string
+    pub fn uuidv6_raw(&self) -> RawUUIDv6 {
+        RawUUIDv6::new(self)
+    }
 }
 
+/// A raw UUIDv6 is a 16 bytes array
 #[derive(Default, Debug, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct UUIDv6 {
+pub struct RawUUIDv6 {
     ts: u64,
     counter: u16,
     initial_counter: u16,
     node: Node,
 }
 
-impl UUIDv6 {
+/// A regular UUIDv6 is a 36 bytes string
+#[derive(Default, Debug, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub struct UUIDv6 {
+    raw: RawUUIDv6,
+}
+
+impl RawUUIDv6 {
     /// Create a new UUIDv6 base object
-    pub fn new(node: &Node) -> UUIDv6 {
+    pub fn new(node: &Node) -> RawUUIDv6 {
         let ts = ((SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .expect("Time went backwards")
@@ -56,7 +68,7 @@ impl UUIDv6 {
         let mut x = [0u8; 2];
         getrandom::getrandom(&mut x).unwrap();
         let initial_counter = u16::from_be_bytes(x);
-        UUIDv6 {
+        RawUUIDv6 {
             ts,
             counter: initial_counter,
             initial_counter,
@@ -65,7 +77,7 @@ impl UUIDv6 {
     }
 
     /// Return the next UUIDv6 as bytes
-    pub fn create_bytes(&mut self) -> [u8; 16] {
+    pub fn create(&mut self) -> [u8; 16] {
         let mut buf = [0u8; 16];
         let ts = self.ts;
         buf[0..8].copy_from_slice(&(ts << 4).to_be_bytes());
@@ -81,10 +93,18 @@ impl UUIDv6 {
         buf[10..].copy_from_slice(&self.node.node_id);
         buf
     }
+}
+
+impl UUIDv6 {
+    pub fn new(node: &Node) -> Self {
+        UUIDv6 {
+            raw: RawUUIDv6::new(node),
+        }
+    }
 
     /// Return the next UUIDv6 string
     pub fn create(&mut self) -> String {
-        let buf = self.create_bytes();
+        let buf = self.raw.create();
 
         let mut out = [0u8; 4 + 32];
         out[8] = b'-';
@@ -99,6 +119,28 @@ impl UUIDv6 {
         hex_format(&mut out[24..], &buf[10..]);
 
         String::from_utf8_lossy(&out).into_owned()
+    }
+}
+
+#[derive(Default, Debug, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub struct RawUUIDv6Iterator {
+    uuid: RawUUIDv6,
+}
+
+impl Iterator for RawUUIDv6Iterator {
+    type Item = [u8; 16];
+
+    fn next(&mut self) -> Option<Self::Item> {
+        Some(self.uuid.create())
+    }
+}
+
+impl IntoIterator for RawUUIDv6 {
+    type IntoIter = RawUUIDv6Iterator;
+    type Item = [u8; 16];
+
+    fn into_iter(self) -> Self::IntoIter {
+        RawUUIDv6Iterator { uuid: self }
     }
 }
 
@@ -129,6 +171,20 @@ fn test() {
     let node = Node::new();
 
     let mut st = node.uuidv6().into_iter();
+
+    let uid_1 = st.next();
+    let uid_2 = st.next();
+    let uid_3 = st.next();
+    debug_assert_ne!(uid_1, uid_2);
+    debug_assert_ne!(uid_2, uid_3);
+    debug_assert_ne!(uid_3, uid_1);
+}
+
+#[test]
+fn test_raw() {
+    let node = Node::new();
+
+    let mut st = node.uuidv6_raw().into_iter();
 
     let uid_1 = st.next();
     let uid_2 = st.next();
