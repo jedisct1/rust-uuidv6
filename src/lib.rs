@@ -64,7 +64,7 @@ impl UUIDv6 {
         }
     }
 
-    /// Return the next bytes UUIDv6 as bytes
+    /// Return the next UUIDv6 as bytes
     pub fn create_bytes(&mut self) -> [u8; 16] {
         let mut buf = [0u8; 16];
         let ts = self.ts;
@@ -79,13 +79,13 @@ impl UUIDv6 {
         };
 
         buf[10..].copy_from_slice(&self.node.node_id);
-
-        return buf;
+        buf
     }
 
     /// Return the next UUIDv6 string
     pub fn create(&mut self) -> String {
         let buf = self.create_bytes();
+
         let mut out = [0u8; 4 + 32];
         out[8] = b'-';
         out[13] = b'-';
