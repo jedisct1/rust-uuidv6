@@ -1,6 +1,6 @@
 [package]
 name = "uuidv6"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["Frank Denis <github@pureftpd.org>"]
 description = "UUIDv6 implementation"
@@ -10,5 +10,8 @@ homepage = "https://github.com/jedisct1/rust-uuidv6"
 readme = "README.md"
 keywords = ["uid", "uuid", "v6", "uuidv6"]
 
-[dependencies]
-getrandom = "0.2.5"
+[target.'cfg(all(any(target_arch = "wasm32", target_arch = "wasm64"), target_os = "unknown"))'.dependencies]
+getrandom = { version = "0.2", optional = false, features = ["js"] }
+
+[target.'cfg(not(all(any(target_arch = "wasm32", target_arch = "wasm64"), target_os = "unknown")))'.dependencies]
+getrandom = { version = "0.2", optional = false }
