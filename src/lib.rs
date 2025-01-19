@@ -1,4 +1,4 @@
-use std::time::{SystemTime, UNIX_EPOCH};
+use coarsetime::Clock;
 
 fn hex_format(out: &mut [u8], bin: &[u8]) {
     const HEX_CHARS: &[u8; 16] = b"0123456789abcdef";
@@ -58,13 +58,11 @@ pub struct UUIDv6 {
 impl RawUUIDv6 {
     /// Create a new UUIDv6 base object
     pub fn new(node: &Node) -> RawUUIDv6 {
-        let ts = ((SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("Time went backwards")
+        let ts = Clock::now_since_epoch()
             .as_nanos()
             .checked_add(1221929280000000)
-            .expect("Time is completely off"))
-            / 100) as u64;
+            .expect("Time is completely off")
+            / 100;
         let mut x = [0u8; 2];
         getrandom::getrandom(&mut x).unwrap();
         let initial_counter = u16::from_be_bytes(x);
