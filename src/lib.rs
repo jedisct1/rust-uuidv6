@@ -20,7 +20,7 @@ impl Node {
     /// Create a random node identifier
     pub fn new() -> Self {
         let mut node_id = [0u8; 6];
-        getrandom::getrandom(&mut node_id).unwrap();
+        getrandom::fill(&mut node_id).unwrap();
         Node { node_id }
     }
 
@@ -64,7 +64,7 @@ impl RawUUIDv6 {
             .expect("Time is completely off")
             / 100;
         let mut x = [0u8; 2];
-        getrandom::getrandom(&mut x).unwrap();
+        getrandom::fill(&mut x).unwrap();
         let initial_counter = u16::from_be_bytes(x);
         RawUUIDv6 {
             ts,
