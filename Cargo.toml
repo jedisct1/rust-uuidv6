@@ -1,6 +1,6 @@
 [package]
 name = "uuidv6"
-version = "0.1.6"
+version = "0.1.7"
 edition = "2021"
 authors = ["Frank Denis <github@pureftpd.org>"]
 description = "UUIDv6 generator with node identifiers, iterators, and string or 16-byte binary output"
