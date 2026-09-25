@@ -3,12 +3,12 @@ name = "uuidv6"
 version = "0.1.6"
 edition = "2021"
 authors = ["Frank Denis <github@pureftpd.org>"]
-description = "UUIDv6 implementation"
+description = "UUIDv6 generator with node identifiers, iterators, and string or 16-byte binary output"
 license = "MIT"
 repository = "https://github.com/jedisct1/rust-uuidv6"
 homepage = "https://github.com/jedisct1/rust-uuidv6"
 readme = "README.md"
-keywords = ["uid", "uuid", "v6", "uuidv6"]
+keywords = ["uuid", "uuidv6", "identifier", "generator", "guid"]
 
 [target.'cfg(all(any(target_arch = "wasm32", target_arch = "wasm64"), target_os = "unknown"))'.dependencies]
 getrandom = { version = "0.3", optional = false, features = ["wasm_js"] }
