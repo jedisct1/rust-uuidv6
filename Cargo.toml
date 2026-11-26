@@ -6,7 +6,6 @@ authors = ["Frank Denis <github@pureftpd.org>"]
 description = "UUIDv6 generator with node identifiers, iterators, and string or 16-byte binary output"
 license = "MIT"
 repository = "https://github.com/jedisct1/rust-uuidv6"
-homepage = "https://github.com/jedisct1/rust-uuidv6"
 readme = "README.md"
 keywords = ["uuid", "uuidv6", "identifier", "generator", "guid"]
 
